@@ -41,9 +41,11 @@ router.get("/:id", (req, res) => {
 			if (user){ 
 				res.send(user);
 			} else if (user === null){
-        console.log("No user document exists");
+				console.log("No user document exists");
+				return res.status(404).send();
 			}else {
 				console.log("Wrong type of ID was provided");
+				return res.status(404).send();
 				//mongoose.Types.ObjectId() ; "51bb793aca2ab77a3200000d"-example of valid ID string
 			}
 		})
@@ -54,7 +56,7 @@ router.route('/:id')
 		User
 			.findByIdAndUpdate(req.params.id, { $set: req.body })
       .then(updatedUsers =>{
-				res.send(updatedUsers);
+				res.status(204).send(updatedUsers);
 			})
 	})
 	.delete((req, res, next) => {

@@ -7,7 +7,9 @@ const createModelExpectations = require('../lib/createModelExpectations');
 const Blog = require('../../server/models/Blog');
 const User = require('../../server/models/User');
 
-describe('Blog Model', () => {
+describe('Blog Model', function() {
+    this.timeout(10000);
+    
     it('should define all the specified fields', () => {
         const b = new Blog(fakeBlogs[0]);
 
@@ -31,7 +33,8 @@ describe('Blog Model', () => {
 
     it('should correctly establish relationship between User and Blog', (done) => {
         const u = new User(fakeUser);
-
+        console.log("User is ", u);
+        
         u
             .save()
             .then(user => {
@@ -51,6 +54,6 @@ describe('Blog Model', () => {
 
                 done();
             })
-        // .catch(error => console.error(error));        
+        .catch(error => console.error(error));        
     });
 });

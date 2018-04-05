@@ -11,7 +11,7 @@ router.route('/')
         res.status(200).json(blogs);
       })
   })
-  .post((req, res) => {
+  .post((req, res, next) => {
     // New higher scope variable
     let dbUser = null;
 
@@ -21,8 +21,9 @@ router.route('/')
       .then(user => {
       
       // Store the fetched user in higher scope variable
-      dbUser = user;        
-      
+      dbUser = user; 
+      console.log("\n\n\n----- Found user is ", user.firstName, user._id);     
+      console.log("\n---- BODY", req.body);
       // Create a blog
       const newBlog = new Blog(req.body);
 
@@ -37,9 +38,12 @@ router.route('/')
         dbUser.blogs.push(blog);
 
         // Save the user back to the database and respond to the original HTTP request with a copy of the newly created blog.
-        dbUser.save().then(() => res.status(201).json(blog));
+        dbUser
+          .save()
+          .then(() => res.status(201).json(blog));
     })
-  })
+    
+  });
 
   router.route('/featured')
     .get((req, res) => {
@@ -55,11 +59,13 @@ router.route('/:id')
     Blog
       .findById({_id: req.params.id}, (err, blog) => {
         if (blog) {
-          res.send (blog);
+          return res.send(blog);
         } else if (blog === null){
+          return res.status(404).send();
           console.log("No blog exists for submitted ID");
         } else {
           console.log("Wrong type of ID was provided");
+          return res.status(404).send();
         }
       })
   })
@@ -68,7 +74,7 @@ router.route('/:id')
     Blog
     .findByIdAndUpdate(req.params.id, { $set: req.body })
     .then (updatedUsers => {
-      res.send(updatedUsers);
+      res.status(204).send(updatedUsers);
     })
   })
 
